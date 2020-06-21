@@ -11,19 +11,17 @@ import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.Toast
+import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListener {
+class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListener, AdapterView.OnItemSelectedListener {
     var pointAForLine= PointF(10f,10f)
     var pointBForLine= PointF(10f,10f)
     var stateOfConnection=0
-    var getMode=0 //0-> create node  1-> connection  2-> delete connection
+    var getMode=0                       //0-> create node  1-> connection  2-> delete connection
     private val TAG = "TREETAG"
     var lastNodePosition= PointF(0f,0f)
     lateinit var lastNode: ImageView
@@ -32,9 +30,34 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var connections= mutableListOf<MutableList<LineView>>()
     var noOfNodes=0
 
+    var algorithm =0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val spinner: Spinner = findViewById(R.id.spinner)
+            ArrayAdapter.createFromResource(
+            this,
+            R.array.algorithms_array,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+        }
+        spinner.onItemSelectedListener = this
+
+        visualize.setOnClickListener {
+            when(algorithm){
+                0 -> Toast.makeText(this, "Please select the algorithm first", Toast.LENGTH_SHORT).show()
+
+                1 ->  Toast.makeText(this, "DFS", Toast.LENGTH_SHORT).show()
+
+                2 -> Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
+
+            }
+        }
+
         rlCanvas.setOnDragListener(this)
         btnRemoveConnection.setBackgroundColor(Color.WHITE)
         btnConnection.setBackgroundColor(Color.WHITE)
@@ -224,4 +247,11 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             false
         }
     }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) { }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+        algorithm = pos
+    }
+
 }

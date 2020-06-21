@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="algorithms_array">
+        <item>Select the Algorithm here...</item>
+        <item>Depth First Search</item>
+        <item>Breadth First Search</item>
+    </string-array>
+
+</resources>

@@ -10,15 +10,16 @@ import android.view.View
 import android.widget.Toast
 
 class LineView : View {
+
     constructor(context: Context):super(context)
     constructor(context: Context,attributeSet: AttributeSet) :super(context,attributeSet)
     constructor(context: Context,attributeSet: AttributeSet,defStyleAttr:Int):super(context,attributeSet,defStyleAttr)
 
 
-
     var paint=Paint()
-    var pointA:PointF= PointF(10f,10f)
-    var pointB:PointF=PointF(10f,10f)
+    var pointA:PointF = PointF(10f,10f)
+    var pointB:PointF = PointF(10f,10f)
+
     override fun onDraw(canvas: Canvas?) {
         paint.setColor(Color.BLACK)
         paint.strokeWidth=10f
@@ -31,6 +32,7 @@ class LineView : View {
         }
         super.onDraw(canvas)
     }
+
     fun draw(){
         invalidate()
         requestLayout()
