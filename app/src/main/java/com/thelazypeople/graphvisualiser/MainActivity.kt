@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.view.children
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -45,8 +46,8 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner.adapter = adapter
         }
-        spinner.onItemSelectedListener = this
 
+        spinner.onItemSelectedListener = this
         visualize.setOnClickListener {
             when(algorithm){
                 0 -> Toast.makeText(this, "Please select the algorithm first", Toast.LENGTH_SHORT).show()
@@ -108,8 +109,8 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         rlCanvas.addView(ivNode)
         noOfNodes++
         ivNode.setOnTouchListener(this)
-        ivNode.x=lastNodePosition.x+100f
-        ivNode.y=lastNodePosition.y+100f
+        ivNode.x=50f
+        ivNode.y=50f
         nodes.add(ivNode)
         nodesFixedOrNot.add(0)
         var connectionsOfOneNode= mutableListOf<LineView>()
@@ -182,6 +183,9 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                     }
                     else{
                         Toast.makeText(this,"NO CONNECTION TO REMOVE", Toast.LENGTH_SHORT).show()
+                        getMode=0
+                        stateOfConnection=0
+                        btnRemoveConnection.setBackgroundColor(Color.WHITE)
                     }
                 }
             }
@@ -207,24 +211,36 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             DragEvent.ACTION_DRAG_STARTED -> {
                 Log.d(TAG, "onDrag: ACTION_DRAG_STARTED")
                 val tvState = dragEvent.localState as View
-                val tvParent = tvState.parent as ViewGroup
-                tvParent.removeView(tvState)
+
                 return true
             }
             DragEvent.ACTION_DROP -> {
                 Log.d(TAG, "onDrag: ACTION_DROP")
                 Log.d(TAG, "onDrag:viewX" + dragEvent.x + "viewY" + dragEvent.y)
-                val tvState = dragEvent.localState as View
-                tvState.x = dragEvent.x-(tvState.width/2)
-                tvState.y = dragEvent.y-(tvState.height/2)
-                lastNodePosition= PointF(dragEvent.x-(tvState.width/2),dragEvent.y-(tvState.height/2))
-                val container = view as RelativeLayout
-                container.addView(tvState)
-                container.visibility = View.VISIBLE
+
+                //container.visibility = View.VISIBLE
                 return true
             }
             DragEvent.ACTION_DRAG_LOCATION -> {
                 Log.d(TAG, "onDrag: ACTION_DRAG_LOCATION")
+                val tvState = dragEvent.localState as View
+                if(dragEvent.x - (tvState.width / 2)>rlCanvas.width-tvState.width)
+                    tvState.x=rlCanvas.width-tvState.width-0f
+                else if (dragEvent.x - (tvState.width / 2)>rlCanvas.width+tvState.width)
+                    tvState.x=rlCanvas.width+tvState.width+0f
+                else
+                    tvState.x = dragEvent.x - (tvState.width / 2)
+                if(dragEvent.y - (tvState.height / 2)>rlCanvas.height-tvState.height)
+                    tvState.y=rlCanvas.height-tvState.height-0f
+                else if (dragEvent.y - (tvState.height / 2)>rlCanvas.height+tvState.height)
+                    tvState.y=rlCanvas.height+tvState.height+0f
+                else
+                    tvState.y = dragEvent.y - (tvState.height / 2)
+                lastNodePosition= PointF(dragEvent.x-(tvState.width/2),dragEvent.y-(tvState.height/2))
+                val tvParent = tvState.parent as ViewGroup
+                tvParent.removeView(tvState)
+                val container = view as RelativeLayout
+                container.addView(tvState)
                 return true
             }
             else -> return false
