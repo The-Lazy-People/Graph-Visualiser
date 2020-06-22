@@ -33,19 +33,14 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var connections= mutableListOf<MutableList<LineView>>()
     var noOfNodes=0
     var algorithm =0
-
     var links= mutableListOf<MutableList<Int>>()
     var checker= mutableListOf<Int>()
-    var index=0
     var isStarterSelected=0
     var startingNode=0
     var isTreeModeOn=0
-    var isBinaryTreeModeOn=0
     var isEditingPosible=0
-
     lateinit var graphSpinner :Spinner
     lateinit var treeSpinner: Spinner
-    lateinit var binaryTreeSpinner: Spinner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,9 +52,8 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
 
         setContentView(R.layout.activity_main)
 
-
-            graphSpinner = findViewById(R.id.spinner)
-            ArrayAdapter.createFromResource(
+        graphSpinner = findViewById(R.id.spinner)
+        ArrayAdapter.createFromResource(
             this,
             R.array.algorithms_array,
             android.R.layout.simple_spinner_item
@@ -79,17 +73,6 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             treeSpinner.adapter = adapter
         }
         treeSpinner.onItemSelectedListener = this
-
-        binaryTreeSpinner = findViewById(R.id.binaryTreeSpinner)
-        ArrayAdapter.createFromResource(
-            this,
-            R.array.binary_tree_algorithms,
-            android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binaryTreeSpinner.adapter = adapter
-        }
-        binaryTreeSpinner.onItemSelectedListener = this
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -190,15 +173,15 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         btnstarting_point.setOnClickListener {
             if (noOfNodes>1) {
                 if (stateOfConnection == 0) {
-                        getMode=3
+                    getMode=3
                     isEditingPosible=1
-                        btnAdd.isClickable=false
-                        btnConnection.isClickable=false
-                        btnRemoveConnection.isClickable=false
-                        btnstarting_point.isClickable=false
-                        btnstarting_point.setBackgroundColor(Color.RED)
-                        btnRemoveConnection.setBackgroundColor(Color.WHITE)
-                        btnConnection.setBackgroundColor(Color.WHITE)
+                    btnAdd.isClickable=false
+                    btnConnection.isClickable=false
+                    btnRemoveConnection.isClickable=false
+                    btnstarting_point.isClickable=false
+                    btnstarting_point.setBackgroundColor(Color.RED)
+                    btnRemoveConnection.setBackgroundColor(Color.WHITE)
+                    btnConnection.setBackgroundColor(Color.WHITE)
                 }
             }
         }
@@ -251,11 +234,8 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             isTreeModeOn=0
             graphSpinner.visibility = View.VISIBLE
             treeSpinner.visibility = View.GONE
-            binaryTreeSpinner.visibility = View.GONE
             isEditingPosible=0
-            isBinaryTreeModeOn=0
             title_view.text = "Graph Visualizer"
-
         }
     }
 
@@ -273,9 +253,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                         Toast.makeText(this, "TREE MODE ACTIVATED", Toast.LENGTH_SHORT).show()
                         title_view.text = "TREE MODE"
                         isTreeModeOn = 1
-                        isBinaryTreeModeOn = 0
                         graphSpinner.visibility = View.GONE
-                        binaryTreeSpinner.visibility = View.GONE
                         treeSpinner.visibility = View.VISIBLE
                         btnAdd.isClickable = false
                         btnConnection.isClickable = false
@@ -283,39 +261,9 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                         return true
                     } else {
                         isTreeModeOn = 0
-                        isBinaryTreeModeOn = 0
                         title_view.text = "Graph Visualizer"
                         graphSpinner.visibility = View.VISIBLE
                         treeSpinner.visibility = View.GONE
-                        binaryTreeSpinner.visibility = View.GONE
-                        btnAdd.isClickable = true
-                        btnConnection.isClickable = true
-                        btnRemoveConnection.isClickable = true
-                        btnstarting_point.isClickable = true
-                        return true
-                    }
-                }
-                R.id.binary_item -> {
-                    if (isThisGraphIsBinaryTree() == true) {
-                        Toast.makeText(this, "BINARY TREE MODE ACTIVATED", Toast.LENGTH_SHORT)
-                            .show()
-                        title_view.text = "BINARY TREE"
-                        isBinaryTreeModeOn = 1
-                        isTreeModeOn = 0
-                        graphSpinner.visibility = View.GONE
-                        treeSpinner.visibility = View.GONE
-                        binaryTreeSpinner.visibility = View.VISIBLE
-                        btnAdd.isClickable = false
-                        btnConnection.isClickable = false
-                        btnRemoveConnection.isClickable = false
-                        return true
-                    } else {
-                        isTreeModeOn = 0
-                        isBinaryTreeModeOn = 0
-                        title_view.text = "Graph Visualizer"
-                        graphSpinner.visibility = View.VISIBLE
-                        treeSpinner.visibility = View.GONE
-                        binaryTreeSpinner.visibility = View.GONE
                         btnAdd.isClickable = true
                         btnConnection.isClickable = true
                         btnRemoveConnection.isClickable = true
@@ -327,13 +275,11 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                     title_view.text = "Graph Visualizer"
                     graphSpinner.visibility = View.VISIBLE
                     treeSpinner.visibility = View.GONE
-                    binaryTreeSpinner.visibility = View.GONE
                     btnAdd.isClickable = true
                     btnConnection.isClickable = true
                     btnRemoveConnection.isClickable = true
                     btnstarting_point.isClickable = true
                     isTreeModeOn = 0
-                    isBinaryTreeModeOn=0
                     return true
                 }
             }
@@ -341,47 +287,8 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         return super.onOptionsItemSelected(item)
     }
 
-    private suspend fun depthOfTree(startingTreeNode:Int): Int {
-        var height=0
-        checker[startingTreeNode]=1
-        for( i in 0..links[startingTreeNode].size-1)
-        {
-            if(checker[links[startingTreeNode][i]]==0) {
-                checker[links[startingTreeNode][i]] = 1
-                nodes[links[startingTreeNode][i]].setImageDrawable(resources.getDrawable(R.drawable.ic_circle))
-                delay(1000)
-                val depth=depthOfTree(links[startingTreeNode][i])
-                if( depth+ 1>height)
-                    height =depth + 1
-            }
-        }
-        return height
-    }
-
-    private fun isThisGraphIsBinaryTree(): Boolean {
-        if(isThisGraphIsTree()==false)
-            return false
-        for (i in 0..connections.size-1){
-            var childCounter=0
-            for(j in 0..connections[i].size-1){
-                if(connections[i][j]!=fakeLineView){
-                    childCounter++
-                }
-                if(childCounter>2){
-                    Toast.makeText(this,"More Than 2 Child",Toast.LENGTH_SHORT).show()
-                    return false
-                }
-            }
-        }
-        return true
-    }
-
     fun isCyclicUtil(v: Int,parent: Int): Boolean {
-        // Mark the current node as visited
         checker[v] = 1
-        var i: Int
-
-        // Recur for all the vertices adjacent to this vertex
         for (i in 0..links[v].size - 1) {
             if (checker[links[v][i]] == 0) {
                 if (isCyclicUtil(links[v][i], v) == true) {
@@ -419,7 +326,6 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             Toast.makeText(this,"NOT TREE - Cyclic Graph",Toast.LENGTH_SHORT).show()
             return false
         }
-
         for (i in 0..noOfNodes-1){
             if(checker[i]==0) {
                 Toast.makeText(this,"NOT TREE - Disconnected Graph",Toast.LENGTH_SHORT).show()
@@ -477,6 +383,23 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         getMode=0
         btnvisualize.isClickable=false
         btnstarting_point.setBackgroundColor(Color.WHITE)
+    }
+
+    private suspend fun depthOfTree(startingTreeNode:Int): Int {
+        var height=0
+        checker[startingTreeNode]=1
+        for( i in 0..links[startingTreeNode].size-1)
+        {
+            if(checker[links[startingTreeNode][i]]==0) {
+                checker[links[startingTreeNode][i]] = 1
+                nodes[links[startingTreeNode][i]].setImageDrawable(resources.getDrawable(R.drawable.ic_circle))
+                delay(1000)
+                val depth=depthOfTree(links[startingTreeNode][i])
+                if( depth+ 1>height)
+                    height =depth + 1
+            }
+        }
+        return height
     }
 
     private fun addTV() {
