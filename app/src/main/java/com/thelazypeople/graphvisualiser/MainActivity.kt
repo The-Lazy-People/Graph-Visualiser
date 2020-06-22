@@ -202,7 +202,6 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                         btnConnection.setBackgroundColor(Color.WHITE)
                 }
             }
-
         }
 
         btnRemoveConnection.setOnClickListener {
@@ -249,6 +248,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             btnConnection.isClickable=true
             btnRemoveConnection.isClickable=true
             btnstarting_point.isClickable=true
+            btnvisualize.isClickable=true
             isTreeModeOn=0
             graphSpinner.visibility = View.VISIBLE
             treeSpinner.visibility = View.GONE
