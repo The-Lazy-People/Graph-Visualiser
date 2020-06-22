@@ -3,7 +3,6 @@ package com.thelazypeople.graphvisualiser
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PointF
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Vibrator
 import android.util.Log
@@ -12,8 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.view.children
-import com.airbnb.lottie.LottieAnimationView
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -21,11 +19,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
+
 class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListener, AdapterView.OnItemSelectedListener {
     var pointAForLine= PointF(10f,10f)
     var pointBForLine= PointF(10f,10f)
     var stateOfConnection=0
-    var getMode=0                       //0-> create node  1-> connection  2-> delete connection
+    var getMode=0                       //0-> create node  1-> connection  2-> delete connection   3-> Starting Point
     private val TAG = "TREETAG"
     var lastNodePosition= PointF(0f,0f)
     lateinit var lastNode: ImageView
@@ -39,9 +38,9 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var index=0
     var isBFSStarterSelected=0
     var startingBFSNode=0
-
     var isDFSStarterSelected = 0
     var startingDFSNode = 0
+    var isTreeModeOn=0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +57,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         }
         spinner.onItemSelectedListener = this
 
-        visualize.setOnClickListener {
+        btnvisualize.setOnClickListener {
             checker.removeAll(checker)
             for (i in 0..noOfNodes-1) {
                 checker.add(0)
@@ -128,6 +127,12 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             }
         }
 
+//        btnstarting_point.setOnClickListener {
+//            if(isThisGraphIsTree()==true){
+//                Toast.makeText(this,"TREE MODE ACTIVATED",Toast.LENGTH_SHORT).show()
+//            }
+//        }
+
         btnstarting_point.setOnClickListener {
             getMode=3
             btnAdd.isClickable=false
@@ -150,6 +155,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                 }
             }
         }
+
         btnReset.setOnClickListener {
             for(i in 0..nodes.size-1){
                 rlCanvas.removeView(nodes[i])
@@ -183,8 +189,57 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         }
     }
 
-    private suspend fun dfs(u:Int)
-    {
+    fun isCyclicUtil(v: Int,parent: Int): Boolean {
+        // Mark the current node as visited
+        checker[v] = 1
+        var i: Int
+
+        // Recur for all the vertices adjacent to this vertex
+        for (i in 0..links[v].size - 1) {
+            if (checker[links[v][i]] == 0) {
+                if (isCyclicUtil(links[v][i], v) == true) {
+                    return true
+                }
+            } else if (links[v][i] != parent) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun isThisGraphIsTree():Boolean {
+        checker.removeAll(checker)
+        for (i in 0..noOfNodes-1) {
+            checker.add(0)
+        }
+        for (i in 0..links.size-1){
+            links.removeAt(0)
+        }
+        for (i in 0..connections.size-1) {
+            var linksOfOneNode= mutableListOf<Int>()
+            for (j in 0..connections[i].size-1) {
+                if(connections[i][j]!=fakeLineView){
+                    linksOfOneNode.add(j)
+                }
+            }
+            links.add(linksOfOneNode)
+        }
+        if (isCyclicUtil(0,-1)==true) {
+            Toast.makeText(this,"NOT TREE - Cyclic Graph",Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+
+        for (i in 0..noOfNodes-1){
+            if(checker[i]==0) {
+                Toast.makeText(this,"NOT TREE - Disconnected Graph",Toast.LENGTH_SHORT).show()
+                return false
+            }
+        }
+        return true
+    }
+
+    private suspend fun dfs(u:Int) {
         val stack = Stack<Int>()
         stack.push(u)
         while (!stack.empty()){
@@ -202,7 +257,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         }
         isDFSStarterSelected = 0
         getMode = 0
-        visualize.isClickable = false
+        btnvisualize.isClickable = false
         btnstarting_point.setBackgroundColor(Color.WHITE)
     }
 
@@ -230,7 +285,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         }
         isBFSStarterSelected=0
         getMode=0
-        visualize.isClickable=false
+        btnvisualize.isClickable=false
         btnstarting_point.setBackgroundColor(Color.WHITE)
     }
 
@@ -418,5 +473,4 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
         algorithm = pos
     }
-
 }

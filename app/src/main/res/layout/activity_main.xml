@@ -55,14 +55,26 @@
         android:layout_height="0dp"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/visualize"
-        app:layout_constraintEnd_toStartOf="@+id/visualize"
+        app:layout_constraintBottom_toBottomOf="@+id/btnvisualize"
+        app:layout_constraintEnd_toStartOf="@+id/btnvisualize"
         app:layout_constraintHorizontal_bias="0.163"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/visualize" />
+        app:layout_constraintTop_toTopOf="@+id/btnvisualize" />
+    <Spinner
+        android:id="@+id/treeSpinner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnvisualize"
+        app:layout_constraintEnd_toStartOf="@+id/btnvisualize"
+        app:layout_constraintHorizontal_bias="0.163"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnvisualize"
+        android:visibility="invisible"/>
 
     <Button
-        android:id="@+id/visualize"
+        android:id="@+id/btnvisualize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
