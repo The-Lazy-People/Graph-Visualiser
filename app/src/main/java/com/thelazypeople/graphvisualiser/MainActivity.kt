@@ -40,6 +40,9 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var isBFSStarterSelected=0
     var startingBFSNode=0
 
+    var isDFSStarterSelected = 0
+    var startingDFSNode = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -54,6 +57,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             spinner.adapter = adapter
         }
         spinner.onItemSelectedListener = this
+
         visualize.setOnClickListener {
             checker.removeAll(checker)
             for (i in 0..noOfNodes-1) {
@@ -71,10 +75,19 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                 }
                 links.add(linksOfOneNode)
             }
+
             when(algorithm){
                 0 -> Toast.makeText(this, "Please select the algorithm first", Toast.LENGTH_SHORT).show()
                 1 ->  {
                     Toast.makeText(this, "DFS", Toast.LENGTH_SHORT).show()
+                    if(isDFSStarterSelected == 0){
+                        Toast.makeText(this, "Select Starting Node", Toast.LENGTH_SHORT).show()
+                    }
+                    else{
+                        GlobalScope.launch(Dispatchers.Main) {
+                            dfs(startingDFSNode)
+                        }
+                    }
                 }
                 2 -> {
                     Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
@@ -123,6 +136,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             btnAdd.isClickable=false
             btnstarting_point.setBackgroundColor(Color.RED)
         }
+
         btnRemoveConnection.setOnClickListener {
             if (noOfNodes>1) {
                 if (stateOfConnection == 0) {
@@ -160,9 +174,34 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             isBFSStarterSelected=0
             startingBFSNode=0
             stateOfConnection=0
+            isDFSStarterSelected = 0
+            startingDFSNode =0
         }
 
 
+    }
+
+    private suspend fun dfs(u:Int)
+    {
+        val stack = Stack<Int>()
+        stack.push(u)
+        while (!stack.empty()){
+            val s = stack.peek()
+            stack.pop()
+            if(checker[s] == 0){
+                nodes[s].setImageDrawable(resources.getDrawable(R.drawable.ic_circle))
+                checker[s] = 1
+                delay(500)
+            }
+            for (i in 0 until links[s].size){
+                if(checker[links[s][i]] == 0)
+                    stack.push(links[s][i])
+            }
+        }
+        isDFSStarterSelected = 0
+        getMode = 0
+        visualize.isClickable = false
+        btnstarting_point.setBackgroundColor(Color.WHITE)
     }
 
     private suspend fun bfs(u:Int) {
@@ -229,10 +268,12 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                 vibratorForLongClick.vibrate(100)
             }
             if(getMode==3){
-                if(isBFSStarterSelected==0) {
+                if(isBFSStarterSelected==0 || isDFSStarterSelected==0) {
                     ivNode.setImageDrawable(resources.getDrawable(R.drawable.ic_add))
                     startingBFSNode = nodes.indexOf(ivNode)
+                    startingDFSNode = nodes.indexOf(ivNode)
                     isBFSStarterSelected = 1
+                    isDFSStarterSelected = 1
                 }
                 return@setOnLongClickListener true
             }
