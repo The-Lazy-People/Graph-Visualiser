@@ -5,6 +5,8 @@ import android.graphics.Color
 import android.graphics.PointF
 import android.os.Bundle
 import android.os.Vibrator
+import android.transition.ChangeBounds
+import android.transition.Explode
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -46,6 +48,12 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        with(window){
+            requestFeature(Window.FEATURE_CONTENT_TRANSITIONS)
+            enterTransition = Explode()
+        }
+
         setContentView(R.layout.activity_main)
 
 
