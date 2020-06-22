@@ -37,10 +37,8 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var links= mutableListOf<MutableList<Int>>()
     var checker= mutableListOf<Int>()
     var index=0
-    var isBFSStarterSelected=0
-    var startingBFSNode=0
-    var isDFSStarterSelected = 0
-    var startingDFSNode = 0
+    var isStarterSelected=0
+    var startingNode=0
     var isTreeModeOn=0
     var isBinaryTreeModeOn=0
     var isEditingPosible=0
@@ -126,28 +124,39 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                 1 ->  {
                     if(isTreeModeOn==0){
                         Toast.makeText(this, "DFS", Toast.LENGTH_SHORT).show()
-                        if(isDFSStarterSelected == 0){
+                        if(isStarterSelected == 0){
                             Toast.makeText(this, "Select Starting Node", Toast.LENGTH_SHORT).show()
                         }
                         else{
                             GlobalScope.launch(Dispatchers.Main) {
-                                dfs(startingDFSNode)
+                                dfs(startingNode)
                             }
                         }
                     }
                     else{ //Tree visualizer
-                        Toast.makeText(this, "Height of Tree", Toast.LENGTH_SHORT).show()
+                        if(isStarterSelected == 0){
+                            Toast.makeText(this, "Select Starting Node", Toast.LENGTH_SHORT).show()
+                        }
+                        else{
+                            GlobalScope.launch(Dispatchers.Main) {
+                                isStarterSelected = 0
+                                getMode = 0
+                                btnvisualize.isClickable = false
+                                btnstarting_point.setBackgroundColor(Color.WHITE)
+                                Toast.makeText(applicationContext, "Height ->"+(depthOfTree(startingNode)+1).toString(), Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
                 }
                 2 -> {
                     if(isTreeModeOn==0){
                         Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
-                        if(isBFSStarterSelected==0){
+                        if(isStarterSelected==0){
                             Toast.makeText(this,"Select Starting Node",Toast.LENGTH_SHORT).show()
                         }
                         else{
                             GlobalScope.launch(Dispatchers.Main) {
-                                bfs(startingBFSNode)
+                                bfs(startingNode)
                             }
                         }
                     }
@@ -233,16 +242,21 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             noOfNodes=0
             getMode=0
             nodesFixedOrNot.removeAll(nodesFixedOrNot)
-            isBFSStarterSelected=0
-            startingBFSNode=0
+            isStarterSelected=0
+            startingNode=0
             stateOfConnection=0
-            isDFSStarterSelected = 0
-            startingDFSNode =0
             btnAdd.isClickable=true
             btnConnection.isClickable=true
             btnRemoveConnection.isClickable=true
             btnstarting_point.isClickable=true
             isTreeModeOn=0
+            graphSpinner.visibility = View.VISIBLE
+            treeSpinner.visibility = View.GONE
+            binaryTreeSpinner.visibility = View.GONE
+            isEditingPosible=0
+            isBinaryTreeModeOn=0
+            title_view.text = "Graph Visualizer"
+
         }
     }
 
@@ -267,7 +281,6 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                         btnAdd.isClickable = false
                         btnConnection.isClickable = false
                         btnRemoveConnection.isClickable = false
-                        btnstarting_point.isClickable = false
                         return true
                     } else {
                         isTreeModeOn = 0
@@ -287,7 +300,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                     if (isThisGraphIsBinaryTree() == true) {
                         Toast.makeText(this, "BINARY TREE MODE ACTIVATED", Toast.LENGTH_SHORT)
                             .show()
-                        title_view.text = "BINARY TREE MODE"
+                        title_view.text = "BINARY TREE"
                         isBinaryTreeModeOn = 1
                         isTreeModeOn = 0
                         graphSpinner.visibility = View.GONE
@@ -296,7 +309,6 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                         btnAdd.isClickable = false
                         btnConnection.isClickable = false
                         btnRemoveConnection.isClickable = false
-                        btnstarting_point.isClickable = false
                         return true
                     } else {
                         isTreeModeOn = 0
@@ -322,6 +334,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                     btnRemoveConnection.isClickable = true
                     btnstarting_point.isClickable = true
                     isTreeModeOn = 0
+                    isBinaryTreeModeOn=0
                     return true
                 }
             }
@@ -336,8 +349,10 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         {
             if(checker[links[startingTreeNode][i]]==0) {
                 checker[links[startingTreeNode][i]] = 1
-                if(depthOfTree(links[startingTreeNode][i]) + 1>height)
-                    height =depthOfTree(links[startingTreeNode][i]) + 1
+                nodes[links[startingTreeNode][i]].setImageDrawable(resources.getDrawable(R.drawable.ic_circle))
+                val depth=depthOfTree(links[startingTreeNode][i])
+                if( depth+ 1>height)
+                    height =depth + 1
             }
         }
         return height
@@ -430,7 +445,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                     stack.push(links[s][i])
             }
         }
-        isDFSStarterSelected = 0
+        isStarterSelected = 0
         getMode = 0
         btnvisualize.isClickable = false
         btnstarting_point.setBackgroundColor(Color.WHITE)
@@ -458,7 +473,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                 }
             }
         }
-        isBFSStarterSelected=0
+        isStarterSelected=0
         getMode=0
         btnvisualize.isClickable=false
         btnstarting_point.setBackgroundColor(Color.WHITE)
@@ -500,12 +515,10 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                 vibratorForLongClick.vibrate(100)
             }
             if(getMode==3){
-                if(isBFSStarterSelected==0 || isDFSStarterSelected==0) {
+                if(isStarterSelected==0) {
                     ivNode.setImageDrawable(resources.getDrawable(R.drawable.ic_add))
-                    startingBFSNode = nodes.indexOf(ivNode)
-                    startingDFSNode = nodes.indexOf(ivNode)
-                    isBFSStarterSelected = 1
-                    isDFSStarterSelected = 1
+                    startingNode = nodes.indexOf(ivNode)
+                    isStarterSelected = 1
                 }
                 return@setOnLongClickListener true
             }
