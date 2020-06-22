@@ -22,7 +22,7 @@ class LineView : View {
 
     override fun onDraw(canvas: Canvas?) {
         paint.setColor(Color.BLACK)
-        paint.strokeWidth=10f
+        paint.strokeWidth=5f
         if (canvas != null) {
             canvas.drawLine(pointA.x,pointA.y,pointB.x,pointB.y,paint)
         }

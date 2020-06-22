@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.children
+import com.airbnb.lottie.LottieAnimationView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -30,9 +31,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var nodesFixedOrNot= mutableListOf<Int>()
     var connections= mutableListOf<MutableList<LineView>>()
     var noOfNodes=0
-
     var algorithm =0
-    private lateinit var activeAnimation : ActiveAnimation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,20 +46,16 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner.adapter = adapter
         }
-
         spinner.onItemSelectedListener = this
         visualize.setOnClickListener {
             when(algorithm){
                 0 -> Toast.makeText(this, "Please select the algorithm first", Toast.LENGTH_SHORT).show()
-
                 1 ->  {
                     Toast.makeText(this, "DFS", Toast.LENGTH_SHORT).show()
                 }
-
                 2 -> {
                     Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
                 }
-
             }
         }
 
@@ -101,10 +96,10 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                 }
             }
         }
+
     }
 
-    private fun addTV()
-    {
+    private fun addTV() {
         val ivNode= ImageView(this)
         ivNode.setImageDrawable(resources.getDrawable(R.drawable.ic_circle_vol_1circle))
         val layoutParamsForivNode = RelativeLayout.LayoutParams(
@@ -115,9 +110,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         layoutParamsForivNode.height = 100;
         ivNode.setLayoutParams(layoutParamsForivNode)
         rlCanvas.addView(ivNode)
-
         noOfNodes++
-
         ivNode.setOnTouchListener(this)
         ivNode.x=50f
         ivNode.y=50f
@@ -256,6 +249,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             else -> return false
         }
     }
+
     override fun onTouch(view: View, motionEvent: MotionEvent):Boolean {
         Log.d(TAG, "onTouch: view->view$view\n MotionEvent$motionEvent")
         if (getMode==1){
