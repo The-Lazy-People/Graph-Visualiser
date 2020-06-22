@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var isTreeModeOn=0
     var isBinaryTreeModeOn=0
     var isEditingPosible=0
+    var height=0
 
     lateinit var graphSpinner :Spinner
     lateinit var treeSpinner: Spinner
@@ -326,6 +327,20 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun depthOfTree(startingTreeNode:Int): Int {
+        height=0
+        checker[startingTreeNode]=1
+        for( i in 0..links[startingTreeNode].size-1)
+        {
+            if(checker[links[startingTreeNode][i]]==0) {
+                checker[links[startingTreeNode][i]] = 1
+                if(depthOfTree(links[startingTreeNode][i]) + 1>height)
+                    height =depthOfTree(links[startingTreeNode][i]) + 1
+            }
+        }
+        return height
     }
 
     private fun isThisGraphIsBinaryTree(): Boolean {
