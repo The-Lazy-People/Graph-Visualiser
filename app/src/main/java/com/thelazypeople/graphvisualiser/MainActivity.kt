@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var connections= mutableListOf<MutableList<LineView>>()
     var noOfNodes=0
     var algorithm =0
+
     var links= mutableListOf<MutableList<Int>>()
     var checker= mutableListOf<Int>()
     var index=0
@@ -71,7 +72,6 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         }
         treeSpinner.onItemSelectedListener = this
 
-
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
@@ -96,25 +96,36 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             when(algorithm){
                 0 -> Toast.makeText(this, "Please select the algorithm first", Toast.LENGTH_SHORT).show()
                 1 ->  {
-                    Toast.makeText(this, "DFS", Toast.LENGTH_SHORT).show()
-                    if(isDFSStarterSelected == 0){
-                        Toast.makeText(this, "Select Starting Node", Toast.LENGTH_SHORT).show()
-                    }
-                    else{
-                        GlobalScope.launch(Dispatchers.Main) {
-                            dfs(startingDFSNode)
+                    if(title_view.text == "Graph Visualizer"){
+
+                        Toast.makeText(this, "DFS", Toast.LENGTH_SHORT).show()
+                        if(isDFSStarterSelected == 0){
+                            Toast.makeText(this, "Select Starting Node", Toast.LENGTH_SHORT).show()
                         }
+                        else{
+                            GlobalScope.launch(Dispatchers.Main) {
+                                dfs(startingDFSNode)
+                            }
+                        }
+                    }
+                    else{ //Tree visualizer
+                        Toast.makeText(this, "Height of Tree", Toast.LENGTH_SHORT).show()
                     }
                 }
                 2 -> {
-                    Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
-                    if(isBFSStarterSelected==0){
-                        Toast.makeText(this,"Select Starting Node",Toast.LENGTH_SHORT).show()
-                    }
-                    else{
-                        GlobalScope.launch(Dispatchers.Main) {
-                            bfs(startingBFSNode)
+                    if(title_view.text == "Graph Visualizer"){
+                        Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
+                        if(isBFSStarterSelected==0){
+                            Toast.makeText(this,"Select Starting Node",Toast.LENGTH_SHORT).show()
                         }
+                        else{
+                            GlobalScope.launch(Dispatchers.Main) {
+                                bfs(startingBFSNode)
+                            }
+                        }
+                    }
+                    else{   //Tree Visualizer
+                        Toast.makeText(this, "Diameter of Tree", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -513,6 +524,11 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     override fun onNothingSelected(p0: AdapterView<*>?) { }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-        algorithm = pos
+        if(parent?.id == R.id.spinner ) {
+            algorithm = pos
+        }
+        else if(parent?.id == R.id.treeSpinner){
+            algorithm = pos
+        }
     }
 }
