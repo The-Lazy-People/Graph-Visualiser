@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             btnAdd.isClickable=false
             btnConnection.isClickable=false
             btnRemoveConnection.isClickable=false
-            btnAdd.isClickable=false
+            btnstarting_point.isClickable=false
             btnstarting_point.setBackgroundColor(Color.RED)
         }
 
@@ -176,9 +176,11 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             stateOfConnection=0
             isDFSStarterSelected = 0
             startingDFSNode =0
+            btnAdd.isClickable=true
+            btnConnection.isClickable=true
+            btnRemoveConnection.isClickable=true
+            btnstarting_point.isClickable=true
         }
-
-
     }
 
     private suspend fun dfs(u:Int)
