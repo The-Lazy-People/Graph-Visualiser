@@ -17,6 +17,7 @@ import com.airbnb.lottie.LottieAnimationView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -36,6 +37,8 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var links= mutableListOf<MutableList<Int>>()
     var checker= mutableListOf<Int>()
     var index=0
+    var isBFSStarterSelected=0
+    var startingBFSNode=0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +55,22 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         }
         spinner.onItemSelectedListener = this
         visualize.setOnClickListener {
+            checker.removeAll(checker)
+            for (i in 0..noOfNodes-1) {
+                checker.add(0)
+            }
+            for (i in 0..links.size-1){
+                links.remove(links[i])
+            }
+            for (i in 0..connections.size-1) {
+                var linksOfOneNode= mutableListOf<Int>()
+                for (j in 0..connections[i].size-1) {
+                    if(connections[i][j]!=fakeLineView){
+                        linksOfOneNode.add(j)
+                    }
+                }
+                links.add(linksOfOneNode)
+            }
             when(algorithm){
                 0 -> Toast.makeText(this, "Please select the algorithm first", Toast.LENGTH_SHORT).show()
                 1 ->  {
@@ -59,27 +78,14 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                 }
                 2 -> {
                     Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
-                    for (i in 0 until noOfNodes)
-                    {
-                        checker.add(0)
+                    if(isBFSStarterSelected==0){
+                        Toast.makeText(this,"Select Starting Node",Toast.LENGTH_SHORT).show()
                     }
-                    for (i in 0..connections.size-1)
-                    {
-                        for (j in 0..connections.size-1)
-                        {
-                            if(connections[i][j]!=fakeLineView)
-                            {
-                                links[i].add(i)
-                                links[j].add(j)
-                            }
+                    else{
+                        GlobalScope.launch(Dispatchers.Main) {
+                            bfs(startingBFSNode)
                         }
                     }
-                    for (i in 0..noOfNodes-1)
-                    {
-                        if(checker[i]==0)
-                        bfs(i)
-                    }
-
                 }
             }
         }
@@ -109,22 +115,29 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         }
 
         btnRemoveConnection.setOnClickListener {
-            if (noOfNodes>1) {
-                if (stateOfConnection == 0) {
-                    if (getMode != 2) {
-                        getMode = 2
-                        btnRemoveConnection.setBackgroundColor(Color.RED)
-                    } else {
-                        getMode = 0
-                        btnRemoveConnection.setBackgroundColor(Color.WHITE)
-                    }
-                }
-            }
+            getMode=3
+            btnAdd.isClickable=false
+            btnConnection.isClickable=false
+            btnRemoveConnection.isClickable=false
+            btnRemoveConnection.setBackgroundColor(Color.RED)
         }
+//        btnRemoveConnection.setOnClickListener {
+//            if (noOfNodes>1) {
+//                if (stateOfConnection == 0) {
+//                    if (getMode != 2) {
+//                        getMode = 2
+//                        btnRemoveConnection.setBackgroundColor(Color.RED)
+//                    } else {
+//                        getMode = 0
+//                        btnRemoveConnection.setBackgroundColor(Color.WHITE)
+//                    }
+//                }
+//            }
+//        }
 
     }
 
-    private fun bfs(u:Int)
+    private suspend fun bfs(u:Int)
     {
         val queue: Queue<Int> = LinkedList<Int>()
         queue.add(u)
@@ -133,17 +146,26 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         {
             var front=queue.peek()
             queue.remove()
-            //nodes[front].setImageDrawable(resources.getDrawable(R.drawable.circle2))
+            //nodes[front].setImageDrawable(resources.getDrawable(R.drawable.ic_circle))
 
             for (j in 0..links[front].size-1)
             {
                 if(checker[links[front][j]]==0)
                 {
+                    nodes[links[front][j]].setImageDrawable(resources.getDrawable(R.drawable.ic_circle))
+                    delay(1000)
                     queue.add(links[front][j])
                     checker[links[front][j]]=1
+
                 }
             }
         }
+        isBFSStarterSelected=0
+        getMode=0
+        btnAdd.isClickable=true
+        btnConnection.isClickable=true
+        btnRemoveConnection.isClickable=true
+        btnRemoveConnection.setBackgroundColor(Color.WHITE)
     }
 
     private fun addTV() {
@@ -180,6 +202,13 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             GlobalScope.launch(Dispatchers.IO) {
                 val vibratorForLongClick = this@MainActivity.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
                 vibratorForLongClick.vibrate(100)
+            }
+            if(getMode==3){
+                if(isBFSStarterSelected==0) {
+                    ivNode.setImageDrawable(resources.getDrawable(R.drawable.ic_add))
+                    startingBFSNode = nodes.indexOf(ivNode)
+                    isBFSStarterSelected = 1
+                }
             }
             if(stateOfConnection==0){
                 pointAForLine= PointF(ivNode.x+(ivNode.width/2),ivNode.y+(ivNode.height/2))
@@ -299,7 +328,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
 
     override fun onTouch(view: View, motionEvent: MotionEvent):Boolean {
         Log.d(TAG, "onTouch: view->view$view\n MotionEvent$motionEvent")
-        if (getMode==1){
+        if (getMode!=0){
             return false
         }
         var indexOfNode=nodes.indexOf(view)
