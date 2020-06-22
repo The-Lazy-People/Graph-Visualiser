@@ -15,6 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/topic_change"
         app:title="Graph Visualizer">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -34,7 +35,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/title_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Graph Visualizer"
@@ -71,7 +72,8 @@
         app:layout_constraintHorizontal_bias="0.163"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btnvisualize"
-        android:visibility="invisible"/>
+        android:visibility="gone"
+        />
 
     <Button
         android:id="@+id/btnvisualize"
@@ -135,7 +137,7 @@
         app:layout_constraintBottom_toTopOf="@+id/btnstarting_point"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner"
+        app:layout_constraintTop_toBottomOf="@+id/btnvisualize"
         app:layout_constraintVertical_bias="0.98">
 
         <com.thelazypeople.graphvisualiser.LineView

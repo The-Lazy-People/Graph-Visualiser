@@ -6,12 +6,10 @@ import android.graphics.PointF
 import android.os.Bundle
 import android.os.Vibrator
 import android.util.Log
-import android.view.DragEvent
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -42,20 +40,40 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var startingDFSNode = 0
     var isTreeModeOn=0
 
+    lateinit var graphSpinner :Spinner
+    lateinit var treeSpinner: Spinner
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val spinner: Spinner = findViewById(R.id.spinner)
+
+            graphSpinner = findViewById(R.id.spinner)
             ArrayAdapter.createFromResource(
             this,
             R.array.algorithms_array,
             android.R.layout.simple_spinner_item
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner.adapter = adapter
+            graphSpinner.adapter = adapter
         }
-        spinner.onItemSelectedListener = this
+        graphSpinner.onItemSelectedListener = this
+
+
+        treeSpinner = findViewById(R.id.treeSpinner)
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.tree_algorithms,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            treeSpinner.adapter = adapter
+        }
+        treeSpinner.onItemSelectedListener = this
+
+
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
         btnvisualize.setOnClickListener {
             checker.removeAll(checker)
@@ -187,6 +205,30 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             btnRemoveConnection.isClickable=true
             btnstarting_point.isClickable=true
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        //return super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.topic_change, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.tree_item ->{
+                title_view.text = "Tree Visualizer"
+                graphSpinner.visibility = View.GONE
+                treeSpinner.visibility = View.VISIBLE
+                return true
+            }
+            R.id.graph_item ->{
+                title_view.text = "Graph Visualizer"
+                graphSpinner.visibility = View.VISIBLE
+                treeSpinner.visibility = View.GONE
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     fun isCyclicUtil(v: Int,parent: Int): Boolean {
