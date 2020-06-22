@@ -402,6 +402,26 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         return height
     }
 
+    suspend fun diameter(startingTreeNode: Int): Int{
+        // Find top two highest children
+        var max1 = 0
+        var max2 = 0
+        for (i in 0..links[startingTreeNode].size-1) {
+            val h = depthOfTree(i)
+            if (h > max1) {
+                max2 = max1
+                max1 = h
+            } else if (h > max2)
+                max2 = h
+        }
+
+        // Iterate over each child for diameter
+        var maxChildDia = 0
+        for (i in 0..links[startingTreeNode].size-1)
+            maxChildDia = Math.max(maxChildDia, diameter(i))
+        return Math.max(maxChildDia, max1 + max2 + 1)
+    }
+
     private fun addTV() {
         val ivNode= ImageView(this)
         ivNode.setImageDrawable(resources.getDrawable(R.drawable.ic_circle_vol_1circle))
