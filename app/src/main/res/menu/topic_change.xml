@@ -6,6 +6,9 @@
         android:id="@+id/tree_item"
         android:title="Tree" />
     <item
+        android:id="@+id/binary_item"
+        android:title="Binary Tree" />
+    <item
         android:id="@+id/graph_item"
         android:title="Graph" />
 </menu>

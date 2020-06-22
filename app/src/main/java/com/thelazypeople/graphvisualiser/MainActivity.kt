@@ -40,9 +40,12 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var isDFSStarterSelected = 0
     var startingDFSNode = 0
     var isTreeModeOn=0
+    var isBinaryTreeModeOn=0
+    var isEditingPosible=0
 
     lateinit var graphSpinner :Spinner
     lateinit var treeSpinner: Spinner
+    lateinit var binaryTreeSpinner: Spinner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +63,6 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         }
         graphSpinner.onItemSelectedListener = this
 
-
         treeSpinner = findViewById(R.id.treeSpinner)
         ArrayAdapter.createFromResource(
             this,
@@ -72,8 +74,25 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         }
         treeSpinner.onItemSelectedListener = this
 
+        binaryTreeSpinner = findViewById(R.id.binaryTreeSpinner)
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.binary_tree_algorithms,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binaryTreeSpinner.adapter = adapter
+        }
+        binaryTreeSpinner.onItemSelectedListener = this
+
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        rlCanvas.setOnDragListener(this)
+        btnRemoveConnection.setBackgroundColor(Color.WHITE)
+        btnConnection.setBackgroundColor(Color.WHITE)
+        btnAdd.setBackgroundColor(Color.WHITE)
+        btnstarting_point.setBackgroundColor(Color.WHITE)
 
         btnvisualize.setOnClickListener {
             checker.removeAll(checker)
@@ -96,8 +115,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             when(algorithm){
                 0 -> Toast.makeText(this, "Please select the algorithm first", Toast.LENGTH_SHORT).show()
                 1 ->  {
-                    if(title_view.text == "Graph Visualizer"){
-
+                    if(isTreeModeOn==0){
                         Toast.makeText(this, "DFS", Toast.LENGTH_SHORT).show()
                         if(isDFSStarterSelected == 0){
                             Toast.makeText(this, "Select Starting Node", Toast.LENGTH_SHORT).show()
@@ -113,7 +131,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                     }
                 }
                 2 -> {
-                    if(title_view.text == "Graph Visualizer"){
+                    if(isTreeModeOn==0){
                         Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
                         if(isBFSStarterSelected==0){
                             Toast.makeText(this,"Select Starting Node",Toast.LENGTH_SHORT).show()
@@ -131,23 +149,19 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             }
         }
 
-        rlCanvas.setOnDragListener(this)
-        btnRemoveConnection.setBackgroundColor(Color.WHITE)
-        btnConnection.setBackgroundColor(Color.WHITE)
-        btnAdd.setBackgroundColor(Color.WHITE)
-        btnstarting_point.setBackgroundColor(Color.WHITE)
-
         btnAdd.setOnClickListener {
             if(getMode==0)
                 addTV()
         }
 
         btnConnection.setOnClickListener {
-            if(noOfNodes>1) {
+            if (noOfNodes > 1) {
                 if (stateOfConnection == 0) {
                     if (getMode != 1) {
                         getMode = 1
                         btnConnection.setBackgroundColor(Color.RED)
+                        btnstarting_point.setBackgroundColor(Color.WHITE)
+                        btnRemoveConnection.setBackgroundColor(Color.WHITE)
                     } else {
                         getMode = 0
                         btnConnection.setBackgroundColor(Color.WHITE)
@@ -156,19 +170,21 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             }
         }
 
-//        btnstarting_point.setOnClickListener {
-//            if(isThisGraphIsTree()==true){
-//                Toast.makeText(this,"TREE MODE ACTIVATED",Toast.LENGTH_SHORT).show()
-//            }
-//        }
-
         btnstarting_point.setOnClickListener {
-            getMode=3
-            btnAdd.isClickable=false
-            btnConnection.isClickable=false
-            btnRemoveConnection.isClickable=false
-            btnstarting_point.isClickable=false
-            btnstarting_point.setBackgroundColor(Color.RED)
+            if (noOfNodes>1) {
+                if (stateOfConnection == 0) {
+                        getMode=3
+                    isEditingPosible=1
+                        btnAdd.isClickable=false
+                        btnConnection.isClickable=false
+                        btnRemoveConnection.isClickable=false
+                        btnstarting_point.isClickable=false
+                        btnstarting_point.setBackgroundColor(Color.RED)
+                        btnRemoveConnection.setBackgroundColor(Color.WHITE)
+                        btnConnection.setBackgroundColor(Color.WHITE)
+                }
+            }
+
         }
 
         btnRemoveConnection.setOnClickListener {
@@ -177,6 +193,8 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                     if (getMode != 2) {
                         getMode = 2
                         btnRemoveConnection.setBackgroundColor(Color.RED)
+                        btnConnection.setBackgroundColor(Color.WHITE)
+                        btnstarting_point.setBackgroundColor(Color.WHITE)
                     } else {
                         getMode = 0
                         btnRemoveConnection.setBackgroundColor(Color.WHITE)
@@ -215,6 +233,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             btnConnection.isClickable=true
             btnRemoveConnection.isClickable=true
             btnstarting_point.isClickable=true
+            isTreeModeOn=0
         }
     }
 
@@ -225,21 +244,98 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.tree_item ->{
-                title_view.text = "Tree Visualizer"
-                graphSpinner.visibility = View.GONE
-                treeSpinner.visibility = View.VISIBLE
-                return true
-            }
-            R.id.graph_item ->{
-                title_view.text = "Graph Visualizer"
-                graphSpinner.visibility = View.VISIBLE
-                treeSpinner.visibility = View.GONE
-                return true
+        if (isEditingPosible==0 && stateOfConnection==0) {
+            when (item.itemId) {
+                R.id.tree_item -> {
+                    if (isThisGraphIsTree() == true) {
+                        Toast.makeText(this, "TREE MODE ACTIVATED", Toast.LENGTH_SHORT).show()
+                        title_view.text = "TREE MODE"
+                        isTreeModeOn = 1
+                        isBinaryTreeModeOn = 0
+                        graphSpinner.visibility = View.GONE
+                        binaryTreeSpinner.visibility = View.GONE
+                        treeSpinner.visibility = View.VISIBLE
+                        btnAdd.isClickable = false
+                        btnConnection.isClickable = false
+                        btnRemoveConnection.isClickable = false
+                        btnstarting_point.isClickable = false
+                        return true
+                    } else {
+                        isTreeModeOn = 0
+                        isBinaryTreeModeOn = 0
+                        title_view.text = "Graph Visualizer"
+                        graphSpinner.visibility = View.VISIBLE
+                        treeSpinner.visibility = View.GONE
+                        binaryTreeSpinner.visibility = View.GONE
+                        btnAdd.isClickable = true
+                        btnConnection.isClickable = true
+                        btnRemoveConnection.isClickable = true
+                        btnstarting_point.isClickable = true
+                        return true
+                    }
+                }
+                R.id.binary_item -> {
+                    if (isThisGraphIsBinaryTree() == true) {
+                        Toast.makeText(this, "BINARY TREE MODE ACTIVATED", Toast.LENGTH_SHORT)
+                            .show()
+                        title_view.text = "BINARY TREE MODE"
+                        isBinaryTreeModeOn = 1
+                        isTreeModeOn = 0
+                        graphSpinner.visibility = View.GONE
+                        treeSpinner.visibility = View.GONE
+                        binaryTreeSpinner.visibility = View.VISIBLE
+                        btnAdd.isClickable = false
+                        btnConnection.isClickable = false
+                        btnRemoveConnection.isClickable = false
+                        btnstarting_point.isClickable = false
+                        return true
+                    } else {
+                        isTreeModeOn = 0
+                        isBinaryTreeModeOn = 0
+                        title_view.text = "Graph Visualizer"
+                        graphSpinner.visibility = View.VISIBLE
+                        treeSpinner.visibility = View.GONE
+                        binaryTreeSpinner.visibility = View.GONE
+                        btnAdd.isClickable = true
+                        btnConnection.isClickable = true
+                        btnRemoveConnection.isClickable = true
+                        btnstarting_point.isClickable = true
+                        return true
+                    }
+                }
+                R.id.graph_item -> {
+                    title_view.text = "Graph Visualizer"
+                    graphSpinner.visibility = View.VISIBLE
+                    treeSpinner.visibility = View.GONE
+                    binaryTreeSpinner.visibility = View.GONE
+                    btnAdd.isClickable = true
+                    btnConnection.isClickable = true
+                    btnRemoveConnection.isClickable = true
+                    btnstarting_point.isClickable = true
+                    isTreeModeOn = 0
+                    return true
+                }
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun isThisGraphIsBinaryTree(): Boolean {
+        if(isThisGraphIsTree()==false)
+            return false
+        for (i in 0..connections.size-1){
+            var childCounter=0
+            for(j in 0..connections[i].size-1){
+                if(connections[i][j]!=fakeLineView){
+                    childCounter++
+                }
+                if(childCounter>2){
+                    Toast.makeText(this,"More Than 2 Child",Toast.LENGTH_SHORT).show()
+                    return false
+                }
+            }
+        }
+        return true
     }
 
     fun isCyclicUtil(v: Int,parent: Int): Boolean {
@@ -261,6 +357,10 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     }
 
     private fun isThisGraphIsTree():Boolean {
+        if(noOfNodes==0){
+            Toast.makeText(this,"NO NODES",Toast.LENGTH_SHORT).show()
+            return false
+        }
         checker.removeAll(checker)
         for (i in 0..noOfNodes-1) {
             checker.add(0)
@@ -281,7 +381,6 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             Toast.makeText(this,"NOT TREE - Cyclic Graph",Toast.LENGTH_SHORT).show()
             return false
         }
-
 
         for (i in 0..noOfNodes-1){
             if(checker[i]==0) {
@@ -394,21 +493,30 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             }
             else{
                 if(getMode==1) {
-                    pointBForLine = PointF(ivNode.x + (ivNode.width / 2), ivNode.y + (ivNode.height / 2))
-                    var lvConnection = LineView(this)
-                    rlCanvas.addView(lvConnection)
-                    lvConnection.pointA = pointAForLine
-                    lvConnection.pointB = pointBForLine
-                    lvConnection.draw()
-                    stateOfConnection = 0
-                    getMode = 0
-                    btnConnection.setBackgroundColor(Color.WHITE)
                     var indexOfCurrentNode = nodes.indexOf(ivNode)
-                    nodesFixedOrNot[indexOfCurrentNode] = 1
                     var indexOfLastNode = nodes.indexOf(lastNode)
-                    nodesFixedOrNot[indexOfLastNode] = 1
-                    connections[indexOfCurrentNode][indexOfLastNode]=lvConnection
-                    connections[indexOfLastNode][indexOfCurrentNode]=lvConnection
+                    if(indexOfCurrentNode==indexOfLastNode){
+                        Toast.makeText(this,"Self Loop Not Allowed",Toast.LENGTH_SHORT).show()
+                        stateOfConnection = 0
+                        getMode = 0
+                        btnConnection.setBackgroundColor(Color.WHITE)
+                    }
+                    else {
+                        pointBForLine =
+                            PointF(ivNode.x + (ivNode.width / 2), ivNode.y + (ivNode.height / 2))
+                        var lvConnection = LineView(this)
+                        rlCanvas.addView(lvConnection)
+                        lvConnection.pointA = pointAForLine
+                        lvConnection.pointB = pointBForLine
+                        lvConnection.draw()
+                        stateOfConnection = 0
+                        getMode = 0
+                        btnConnection.setBackgroundColor(Color.WHITE)
+                        nodesFixedOrNot[indexOfCurrentNode] = 1
+                        nodesFixedOrNot[indexOfLastNode] = 1
+                        connections[indexOfCurrentNode][indexOfLastNode] = lvConnection
+                        connections[indexOfLastNode][indexOfCurrentNode] = lvConnection
+                    }
                 }
                 else if(getMode==2){
                     var indexOfLastNode = nodes.indexOf(lastNode)

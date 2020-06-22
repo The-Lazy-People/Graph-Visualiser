@@ -11,5 +11,10 @@
         <item>Height of Tree</item>
         <item>Diameter of Tree</item>
     </string-array>
+    <string-array name="binary_tree_algorithms">
+        <item>Select the Algorithm here...</item>
+        <item>Binary</item>
+        <item>Tree</item>
+    </string-array>
 
 </resources>
