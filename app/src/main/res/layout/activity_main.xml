@@ -11,10 +11,43 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:background="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="Graph Visualizer" />
+        app:title="Graph Visualizer">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:background="#FBF9F9"
+                android:text="RESET"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Graph Visualizer"
+                android:textColor="#050505"
+                android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.appcompat.widget.Toolbar>
 
     <Spinner
         android:id="@+id/spinner"
@@ -43,7 +76,6 @@
         android:id="@+id/btnAdd"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:layout_weight="1"
@@ -51,19 +83,20 @@
         android:text="Add Node"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnConnection"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btnConnection"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_weight="1"
         android:background="#F4F4F4"
         android:text="Connect Node"
         app:layout_constraintBottom_toBottomOf="@+id/btnAdd"
         app:layout_constraintEnd_toStartOf="@+id/btnRemoveConnection"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnAdd"
         app:layout_constraintTop_toTopOf="@+id/btnAdd" />
 
@@ -77,18 +110,17 @@
         android:background="#FAF8F8"
         android:text="Remove Connection"
         app:layout_constraintBottom_toBottomOf="@+id/btnConnection"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toStartOf="@+id/starting_point"
         app:layout_constraintStart_toEndOf="@+id/btnConnection"
         app:layout_constraintTop_toTopOf="@+id/btnConnection" />
 
     <RelativeLayout
         android:id="@+id/rlCanvas"
-        android:layout_width="409dp"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="12"
         android:background="#FF8989"
-        app:layout_constraintBottom_toTopOf="@+id/btnConnection"
+        app:layout_constraintBottom_toTopOf="@+id/starting_point"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner"
@@ -101,6 +133,19 @@
             android:visibility="invisible" />
 
     </RelativeLayout>
+
+    <Button
+        android:id="@+id/starting_point"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="#FDFBFB"
+        android:text="Add Starting Point"
+        app:layout_constraintBottom_toBottomOf="@+id/btnRemoveConnection"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnRemoveConnection"
+        app:layout_constraintTop_toTopOf="@+id/btnRemoveConnection" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
