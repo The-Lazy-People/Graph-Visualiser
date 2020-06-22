@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListener, AdapterView.OnItemSelectedListener {
     var pointAForLine= PointF(10f,10f)
@@ -32,6 +33,9 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var connections= mutableListOf<MutableList<LineView>>()
     var noOfNodes=0
     var algorithm =0
+    var links= mutableListOf<MutableList<Int>>()
+    var checker= mutableListOf<Int>()
+    var index=0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +59,27 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                 }
                 2 -> {
                     Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
+                    for (i in 0 until noOfNodes)
+                    {
+                        checker.add(0)
+                    }
+                    for (i in 0..connections.size-1)
+                    {
+                        for (j in 0..connections.size-1)
+                        {
+                            if(connections[i][j]!=fakeLineView)
+                            {
+                                links[i].add(i)
+                                links[j].add(j)
+                            }
+                        }
+                    }
+                    for (i in 0..noOfNodes-1)
+                    {
+                        if(checker[i]==0)
+                        bfs(i)
+                    }
+
                 }
             }
         }
@@ -97,6 +122,28 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             }
         }
 
+    }
+
+    private fun bfs(u:Int)
+    {
+        val queue: Queue<Int> = LinkedList<Int>()
+        queue.add(u)
+        checker[u]=1
+        while (!queue.isEmpty())
+        {
+            var front=queue.peek()
+            queue.remove()
+            //nodes[front].setImageDrawable(resources.getDrawable(R.drawable.circle2))
+
+            for (j in 0..links[front].size-1)
+            {
+                if(checker[links[front][j]]==0)
+                {
+                    queue.add(links[front][j])
+                    checker[links[front][j]]=1
+                }
+            }
+        }
     }
 
     private fun addTV() {
