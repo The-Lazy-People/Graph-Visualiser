@@ -5,13 +5,13 @@ import android.graphics.Color
 import android.graphics.PointF
 import android.os.Bundle
 import android.os.Vibrator
-import android.transition.ChangeBounds
 import android.transition.Explode
 import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var pointAForLine= PointF(10f,10f)
     var pointBForLine= PointF(10f,10f)
     var stateOfConnection=0
-    var getMode=0                       //0-> create node  1-> connection  2-> delete connection   3-> Starting Point
+    var getMode=0                     //0-> create node  1-> connection  2-> delete connection   3-> Starting Point
     private val TAG = "TREETAG"
     var lastNodePosition= PointF(0f,0f)
     lateinit var lastNode: ImageView
@@ -102,12 +102,11 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             }
 
             when(algorithm){
-                0 -> Toast.makeText(this, "Please select the algorithm first", Toast.LENGTH_SHORT).show()
+                0 -> Snackbar.make(rlCanvas, "Please select the algorithm first", Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
                 1 ->  {
                     if(isTreeModeOn==0){
-                        Toast.makeText(this, "DFS", Toast.LENGTH_SHORT).show()
                         if(isStarterSelected == 0){
-                            Toast.makeText(this, "Select Starting Node", Toast.LENGTH_SHORT).show()
+                            Snackbar.make(rlCanvas, "Select Starting Node", Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
                         }
                         else{
                             GlobalScope.launch(Dispatchers.Main) {
@@ -117,7 +116,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                     }
                     else{ //Tree visualizer
                         if(isStarterSelected == 0){
-                            Toast.makeText(this, "Select Starting Node", Toast.LENGTH_SHORT).show()
+                            Snackbar.make(rlCanvas, "Select Starting Node", Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
                         }
                         else{
                             GlobalScope.launch(Dispatchers.Main) {
@@ -125,16 +124,15 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                                 getMode = 0
                                 btnvisualize.isClickable = false
                                 btnstarting_point.setBackgroundColor(Color.WHITE)
-                                Toast.makeText(applicationContext, "Height ->"+(depthOfTree(startingNode)+1).toString(), Toast.LENGTH_SHORT).show()
+                                Snackbar.make(rlCanvas, "Height ->"+(depthOfTree(startingNode)+1).toString(), Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
                             }
                         }
                     }
                 }
                 2 -> {
                     if(isTreeModeOn==0){
-                        Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
                         if(isStarterSelected==0){
-                            Toast.makeText(this,"Select Starting Node",Toast.LENGTH_SHORT).show()
+                            Snackbar.make(rlCanvas, "Select Starting Node", Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
                         }
                         else{
                             GlobalScope.launch(Dispatchers.Main) {
@@ -143,7 +141,18 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                         }
                     }
                     else{   //Tree Visualizer
-                        Toast.makeText(this, "Diameter of Tree", Toast.LENGTH_SHORT).show()
+                        if(isStarterSelected == 0){
+                            Snackbar.make(rlCanvas, "Select Starting Node", Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
+                        }
+                        else{
+                            GlobalScope.launch(Dispatchers.Main) {
+                                isStarterSelected = 0
+                                getMode = 0
+                                btnvisualize.isClickable = false
+                                btnstarting_point.setBackgroundColor(Color.WHITE)
+                                Snackbar.make(rlCanvas, "diameter->"+diameter(startingNode), Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
+                            }
+                        }
                     }
                 }
             }
@@ -250,7 +259,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             when (item.itemId) {
                 R.id.tree_item -> {
                     if (isThisGraphIsTree() == true) {
-                        Toast.makeText(this, "TREE MODE ACTIVATED", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(rlCanvas, "TREE MODE", Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
                         title_view.text = "TREE MODE"
                         isTreeModeOn = 1
                         graphSpinner.visibility = View.GONE
@@ -303,7 +312,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
 
     private fun isThisGraphIsTree():Boolean {
         if(noOfNodes==0){
-            Toast.makeText(this,"NO NODES",Toast.LENGTH_SHORT).show()
+            Snackbar.make(rlCanvas, "NO NODES", Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
             return false
         }
         checker.removeAll(checker)
@@ -323,12 +332,12 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             links.add(linksOfOneNode)
         }
         if (isCyclicUtil(0,-1)==true) {
-            Toast.makeText(this,"NOT TREE - Cyclic Graph",Toast.LENGTH_SHORT).show()
+            Snackbar.make(rlCanvas, "NOT TREE - Cyclic Graph", Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
             return false
         }
         for (i in 0..noOfNodes-1){
             if(checker[i]==0) {
-                Toast.makeText(this,"NOT TREE - Disconnected Graph",Toast.LENGTH_SHORT).show()
+                Snackbar.make(rlCanvas, "NOT TREE - Disconnected Graph", Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
                 return false
             }
         }
@@ -361,21 +370,15 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         val queue: Queue<Int> = LinkedList<Int>()
         queue.add(u)
         checker[u]=1
-        while (!queue.isEmpty())
-        {
+        while (!queue.isEmpty()) {
             var front=queue.peek()
             queue.remove()
-            //nodes[front].setImageDrawable(resources.getDrawable(R.drawable.ic_circle))
-
-            for (j in 0..links[front].size-1)
-            {
-                if(checker[links[front][j]]==0)
-                {
+            for (j in 0..links[front].size-1) {
+                if(checker[links[front][j]]==0) {
                     nodes[links[front][j]].setImageDrawable(resources.getDrawable(R.drawable.ic_circle))
                     delay(1000)
                     queue.add(links[front][j])
                     checker[links[front][j]]=1
-
                 }
             }
         }
@@ -388,8 +391,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     private suspend fun depthOfTree(startingTreeNode:Int): Int {
         var height=0
         checker[startingTreeNode]=1
-        for( i in 0..links[startingTreeNode].size-1)
-        {
+        for( i in 0..links[startingTreeNode].size-1) {
             if(checker[links[startingTreeNode][i]]==0) {
                 checker[links[startingTreeNode][i]] = 1
                 nodes[links[startingTreeNode][i]].setImageDrawable(resources.getDrawable(R.drawable.ic_circle))
@@ -402,24 +404,36 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         return height
     }
 
-    suspend fun diameter(startingTreeNode: Int): Int{
-        // Find top two highest children
+    private suspend fun depthOfTreeForDiameter(startingTreeNoder:Int,root:Int): Int {
+        var height=0
+        checker[startingTreeNoder]=1
+        nodes[startingTreeNoder].setImageDrawable(resources.getDrawable(R.drawable.ic_circle))
+        for( i in 0..links[startingTreeNoder].size-1) {
+            if(links[startingTreeNoder][i]!=root) {
+                if (checker[links[startingTreeNoder][i]] == 0) {
+                    checker[links[startingTreeNoder][i]] = 1
+                    delay(1000)
+                    val depth = depthOfTreeForDiameter(links[startingTreeNoder][i],root)
+                    if (depth + 1 > height)
+                        height = depth + 1
+                }
+            }
+        }
+        return height
+    }
+
+    suspend fun diameter(startingTreeNoder: Int): Int{
         var max1 = 0
         var max2 = 0
-        for (i in 0..links[startingTreeNode].size-1) {
-            val h = depthOfTree(i)
+        for (i in 0..links[startingTreeNoder].size-1) {
+            val h = depthOfTreeForDiameter(links[startingTreeNoder][i],startingTreeNoder)+1
             if (h > max1) {
                 max2 = max1
                 max1 = h
             } else if (h > max2)
                 max2 = h
         }
-
-        // Iterate over each child for diameter
-        var maxChildDia = 0
-        for (i in 0..links[startingTreeNode].size-1)
-            maxChildDia = Math.max(maxChildDia, diameter(i))
-        return Math.max(maxChildDia, max1 + max2 + 1)
+        return max1+max2+1
     }
 
     private fun addTV() {
@@ -475,7 +489,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                     var indexOfCurrentNode = nodes.indexOf(ivNode)
                     var indexOfLastNode = nodes.indexOf(lastNode)
                     if(indexOfCurrentNode==indexOfLastNode){
-                        Toast.makeText(this,"Self Loop Not Allowed",Toast.LENGTH_SHORT).show()
+                        Snackbar.make(rlCanvas, "Self Loop Not Allowed", Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
                         stateOfConnection = 0
                         getMode = 0
                         btnConnection.setBackgroundColor(Color.WHITE)
@@ -525,7 +539,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                             nodesFixedOrNot[indexOfLastNode] = 0
                     }
                     else{
-                        Toast.makeText(this,"NO CONNECTION TO REMOVE", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(rlCanvas, "NO CONNECTION TO REMOVE", Snackbar.LENGTH_SHORT).setAnchorView(btnConnection).show()
                         getMode=0
                         stateOfConnection=0
                         btnRemoveConnection.setBackgroundColor(Color.WHITE)

@@ -155,7 +155,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:background="#FDFBFB"
-        android:text="Add Starting Point"
+        android:text="Add Start Node"
         app:layout_constraintBottom_toBottomOf="@+id/btnRemoveConnection"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
