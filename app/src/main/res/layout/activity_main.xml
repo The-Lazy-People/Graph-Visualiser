@@ -22,7 +22,7 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/reset"
+                android:id="@+id/btnReset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -110,7 +110,7 @@
         android:background="#FAF8F8"
         android:text="Remove Connection"
         app:layout_constraintBottom_toBottomOf="@+id/btnConnection"
-        app:layout_constraintEnd_toStartOf="@+id/starting_point"
+        app:layout_constraintEnd_toStartOf="@+id/btnstarting_point"
         app:layout_constraintStart_toEndOf="@+id/btnConnection"
         app:layout_constraintTop_toTopOf="@+id/btnConnection" />
 
@@ -120,7 +120,7 @@
         android:layout_height="0dp"
         android:layout_weight="12"
         android:background="#FF8989"
-        app:layout_constraintBottom_toTopOf="@+id/starting_point"
+        app:layout_constraintBottom_toTopOf="@+id/btnstarting_point"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner"
@@ -135,7 +135,7 @@
     </RelativeLayout>
 
     <Button
-        android:id="@+id/starting_point"
+        android:id="@+id/btnstarting_point"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

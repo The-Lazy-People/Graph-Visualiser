@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                 checker.add(0)
             }
             for (i in 0..links.size-1){
-                links.remove(links[i])
+                links.removeAt(0)
             }
             for (i in 0..connections.size-1) {
                 var linksOfOneNode= mutableListOf<Int>()
@@ -94,6 +94,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         btnRemoveConnection.setBackgroundColor(Color.WHITE)
         btnConnection.setBackgroundColor(Color.WHITE)
         btnAdd.setBackgroundColor(Color.WHITE)
+        btnstarting_point.setBackgroundColor(Color.WHITE)
 
         btnAdd.setOnClickListener {
             if(getMode==0)
@@ -114,31 +115,57 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             }
         }
 
-        btnRemoveConnection.setOnClickListener {
+        btnstarting_point.setOnClickListener {
             getMode=3
             btnAdd.isClickable=false
             btnConnection.isClickable=false
             btnRemoveConnection.isClickable=false
-            btnRemoveConnection.setBackgroundColor(Color.RED)
+            btnAdd.isClickable=false
+            btnstarting_point.setBackgroundColor(Color.RED)
         }
-//        btnRemoveConnection.setOnClickListener {
-//            if (noOfNodes>1) {
-//                if (stateOfConnection == 0) {
-//                    if (getMode != 2) {
-//                        getMode = 2
-//                        btnRemoveConnection.setBackgroundColor(Color.RED)
-//                    } else {
-//                        getMode = 0
-//                        btnRemoveConnection.setBackgroundColor(Color.WHITE)
-//                    }
-//                }
-//            }
-//        }
+        btnRemoveConnection.setOnClickListener {
+            if (noOfNodes>1) {
+                if (stateOfConnection == 0) {
+                    if (getMode != 2) {
+                        getMode = 2
+                        btnRemoveConnection.setBackgroundColor(Color.RED)
+                    } else {
+                        getMode = 0
+                        btnRemoveConnection.setBackgroundColor(Color.WHITE)
+                    }
+                }
+            }
+        }
+        btnReset.setOnClickListener {
+            for(i in 0..nodes.size-1){
+                rlCanvas.removeView(nodes[i])
+            }
+            for(i in 0..connections.size-1){
+                for (j in 0..connections[i].size-1){
+                    if(connections[i][j]!=fakeLineView){
+                        rlCanvas.removeView(connections[i][j])
+                        connections[i][j]=fakeLineView
+                        connections[j][i]=fakeLineView
+                    }
+                }
+            }
+            nodes.removeAll(nodes)
+            for (i in 0..connections.size-1){
+                connections.removeAt(0)
+            }
+            lastNodePosition= PointF(0f,0f)
+            noOfNodes=0
+            getMode=0
+            nodesFixedOrNot.removeAll(nodesFixedOrNot)
+            isBFSStarterSelected=0
+            startingBFSNode=0
+            stateOfConnection=0
+        }
+
 
     }
 
-    private suspend fun bfs(u:Int)
-    {
+    private suspend fun bfs(u:Int) {
         val queue: Queue<Int> = LinkedList<Int>()
         queue.add(u)
         checker[u]=1
@@ -162,10 +189,8 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         }
         isBFSStarterSelected=0
         getMode=0
-        btnAdd.isClickable=true
-        btnConnection.isClickable=true
-        btnRemoveConnection.isClickable=true
-        btnRemoveConnection.setBackgroundColor(Color.WHITE)
+        visualize.isClickable=false
+        btnstarting_point.setBackgroundColor(Color.WHITE)
     }
 
     private fun addTV() {
@@ -209,6 +234,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                     startingBFSNode = nodes.indexOf(ivNode)
                     isBFSStarterSelected = 1
                 }
+                return@setOnLongClickListener true
             }
             if(stateOfConnection==0){
                 pointAForLine= PointF(ivNode.x+(ivNode.width/2),ivNode.y+(ivNode.height/2))
