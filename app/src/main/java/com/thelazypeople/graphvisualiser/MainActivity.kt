@@ -32,10 +32,13 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
     var noOfNodes=0
 
     var algorithm =0
+    private lateinit var activeAnimation : ActiveAnimation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        activeAnimation = ActiveAnimation(lottie)
 
         val spinner: Spinner = findViewById(R.id.spinner)
             ArrayAdapter.createFromResource(
@@ -52,9 +55,15 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
             when(algorithm){
                 0 -> Toast.makeText(this, "Please select the algorithm first", Toast.LENGTH_SHORT).show()
 
-                1 ->  Toast.makeText(this, "DFS", Toast.LENGTH_SHORT).show()
+                1 ->  {
+                    activeAnimation.toActive()
+                    Toast.makeText(this, "DFS", Toast.LENGTH_SHORT).show()
+                }
 
-                2 -> Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
+                2 -> {
+                    activeAnimation.toInactive()
+                    Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
+                }
 
             }
         }
@@ -63,10 +72,12 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         btnRemoveConnection.setBackgroundColor(Color.WHITE)
         btnConnection.setBackgroundColor(Color.WHITE)
         btnAdd.setBackgroundColor(Color.WHITE)
+
         btnAdd.setOnClickListener {
             if(getMode==0)
                 addTV()
         }
+
         btnConnection.setOnClickListener {
             if(noOfNodes>1) {
                 if (stateOfConnection == 0) {
@@ -80,6 +91,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                 }
             }
         }
+
         btnRemoveConnection.setOnClickListener {
             if (noOfNodes>1) {
                 if (stateOfConnection == 0) {
@@ -107,7 +119,9 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         layoutParamsForivNode.height = 100;
         ivNode.setLayoutParams(layoutParamsForivNode)
         rlCanvas.addView(ivNode)
+
         noOfNodes++
+
         ivNode.setOnTouchListener(this)
         ivNode.x=50f
         ivNode.y=50f
@@ -115,7 +129,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         nodesFixedOrNot.add(0)
         var connectionsOfOneNode= mutableListOf<LineView>()
         if(noOfNodes>0) {
-            for (i in 0..connections.size-1) {
+            for (i in 0 until connections.size) {
                 connections[i].add(fakeLineView)
             }
             for (i in 0..noOfNodes) {
