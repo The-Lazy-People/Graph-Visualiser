@@ -38,8 +38,6 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        activeAnimation = ActiveAnimation(lottie)
-
         val spinner: Spinner = findViewById(R.id.spinner)
             ArrayAdapter.createFromResource(
             this,
@@ -56,12 +54,10 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener, View.OnDragListe
                 0 -> Toast.makeText(this, "Please select the algorithm first", Toast.LENGTH_SHORT).show()
 
                 1 ->  {
-                    activeAnimation.toActive()
                     Toast.makeText(this, "DFS", Toast.LENGTH_SHORT).show()
                 }
 
                 2 -> {
-                    activeAnimation.toInactive()
                     Toast.makeText(this, "BFS", Toast.LENGTH_SHORT).show()
                 }
 

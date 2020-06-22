@@ -5,8 +5,8 @@ import com.airbnb.lottie.LottieAnimationView
 class ActiveAnimation(var anim: LottieAnimationView) {
 
     companion object{
-        const val Inactive_to_active = 1f
-        const val Active_to_inactive = -1f
+        const val Inactive_to_active = 5f
+        const val Active_to_inactive = -5f
     }
 
     init {
