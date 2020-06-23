@@ -3,7 +3,7 @@
 
 ## Sneak Peak towards our creation:
 
-<kbd> ![graph-visualizer Visualizer](img/video.gif) </kbd>
+<kbd> <img src="https://github.com/The-Lazy-People/Graph-Visualiser/blob/master/img/video.gif" width="300" height="550" /> </kbd>
 
 ----
 
