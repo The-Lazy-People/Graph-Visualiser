@@ -7,9 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.viewpager.widget.ViewPager
-import com.thelazypeople.graphvisualiser.ui.FirstFragment
-import com.thelazypeople.graphvisualiser.ui.SecondFragment
-import com.thelazypeople.graphvisualiser.ui.ThirdFragment
+import com.thelazypeople.graphvisualiser.ui.*
 import kotlinx.android.synthetic.main.activity_tutorial.*
 
 class TutorialActivity : AppCompatActivity() {
@@ -25,8 +23,8 @@ class TutorialActivity : AppCompatActivity() {
             addf(FirstFragment())
             addf(SecondFragment())
             addf(ThirdFragment())
-           // addf(FourthFragment())
-           // addf(FifthFragment())
+            addf(FourthFragment())
+            addf(FifthFragment())
         }
 
 

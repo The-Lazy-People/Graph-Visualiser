@@ -29,7 +29,7 @@ class SplashActivity : AppCompatActivity() {
             }
 
             override fun onAnimationEnd(p0: Animator?) {
-                startActivity(Intent(baseContext, MainActivity::class.java),
+                startActivity(Intent(baseContext, TutorialActivity::class.java),
                     ActivityOptions.makeSceneTransitionAnimation(this@SplashActivity).toBundle())
                 finish()
             }
