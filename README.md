@@ -29,10 +29,10 @@
 - The diameter of a tree (sometimes called the width) is the number of nodes on the longest path between two end nodes.
 
 ## TUTORIAL-SHEET DISPLAY  :eyes:	
-<kbd><img src="img/1.jpeg" width=300></kbd>
-<kbd><img src="img/2.jpeg" width=300></kbd>
-<kbd><img src="img/3.jpeg" width=300></kbd>
-<kbd><img src="img/4.jpeg" width=300></kbd>
+<kbd><img src="img/1.jpg" width=300></kbd>
+<kbd><img src="img/2.jpg" width=300></kbd>
+<kbd><img src="img/3.jpg" width=300></kbd>
+<kbd><img src="img/4.jpg" width=300></kbd>
 
 ## Getting Started :+1:
 
